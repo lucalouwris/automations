@@ -11,7 +11,6 @@ blueprint:
         entity:
           domain: binary_sensor
           device_class: motion
-          multiple: false
     target_light:
       name: Lights
       description: The lights to keep in sync.
