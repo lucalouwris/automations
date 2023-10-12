@@ -1,0 +1,92 @@
+blueprint:
+  name: Motion triggered rgb light with user change
+  description: Turn a light on based on detected motion and current brightness turn on or off only when user hasn't changed the light
+  source_url: https://github.com/lucalouwris/automations/blob/main/motion_lux_light.yaml
+  domain: automation
+  input:
+    motion_sensor:
+      name: Motion Sensor
+      description: This sensor will be synchronized with the light.
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+          multiple: false
+    target_light:
+      name: Lights
+      description: The lights to keep in sync.
+      selector:
+        target:
+          entity:
+            domain: light
+    target_brightness:
+      name: Brightness for the light
+      description: How bright the light should be when triggered
+      default: 200
+      selector:
+        number:
+          min: 1.0
+          max: 255.0
+          unit_of_measurement: '%'
+          step: 1.0
+          mode: slider
+    brightness_sensor:
+      name: Brightness Sensor
+      description: The brightness sensor to compare to.
+      selector:
+        target:
+          entity:
+            domain: sensor
+    below_brightness:
+      name: Brightness value
+      description: The maximum brightness for when to still trigger the light.
+      default: 400
+      selector:
+        number:
+          min: 0.0
+          max: 3600.0
+          unit_of_measurement: lux
+          step: 1.0
+          mode: slider
+  mode: restart
+  max_exceeded: silent
+  trigger:
+  - platform: state
+    entity_id: !input motion_sensor
+  condition:
+  variables:
+    target_light_var: !input target_light
+    target_brightness_var: !input target_brightness
+  action:
+  - if:
+    - condition: state
+      entity_id: occupancy
+      state: 'off'
+      enabled: true
+    - condition: template # Here we check if the brightness of the target light matches the brightness that it has when the motion sensor triggered
+      value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
+      alias: Confirm brightness matches the AutoBrightness
+    then:
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id: !input target_light
+  - if:
+    - condition: state # Check if occupancy is on
+      entity_id: occupancy
+      state: 'on'
+      enabled: true
+    - condition: state # Check if occupancy light is off
+      entity_id: !input target_light
+      state: 'off'
+    - condition: numeric_state # Here we check if the lux value is below the maximum trigger brightness
+      entity_id: !input brightness_sensor
+      below: !input below_brightness
+    - condition: template # Here we check if the brightness of the target light matches the brightness that it has when the motion sensor triggered
+      value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
+      alias: Confirm brightness matches the AutoBrightness
+    then:
+    - service: light.turn_on
+      data: {}
+      target:
+        entity_id: !input target_light
