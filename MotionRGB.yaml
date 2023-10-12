@@ -76,7 +76,7 @@ action:
     entity_id: occupancy
     state: 'on'
     enabled: true
-  - condition: state # Check if occupancy light is off
+  - condition: state # Check if occupancy light is offff
     entity_id: !input target_light
     state: 'off'
   - condition: numeric_state # Here we check if the lux value is below the maximum trigger brightness
