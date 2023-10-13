@@ -76,7 +76,7 @@ action:
         entity_id: !input motion_sensor
         state: "off"
       - condition: template
-        value_template: "{{ state_attr(AutoLight, 'brightness') < AutoBrightness + 2.55 and state_attr(AutoLight, 'brightness') > AutoBrightness - 2.55 }}"
+        value_template: "{{ state_attr(AutoLight, 'brightness') < AutoBrightness + 1.5 and state_attr(AutoLight, 'brightness') > AutoBrightness - 1.5 }}"
     then:
       - service: light.turn_off
         data: {}
