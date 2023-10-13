@@ -49,8 +49,6 @@ blueprint:
           mode: slider
 mode: restart
 max_exceeded: silent
-
-
 trigger:
 - platform: state
   entity_id: !input motion_sensor
@@ -63,7 +61,7 @@ action:
     entity_id: occupancy
     state: 'off'
     enabled: true
- - condition: template # Here we check if the brightness of the target light matches the brightness that it has when the motion sensor triggered
+ - condition: template
    value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
    alias: Confirm brightness matches the AutoBrightness
   then:
@@ -72,17 +70,17 @@ action:
     target:
       entity_id: !input target_light
 - if:
-  - condition: state # Check if occupancy is on
+  - condition: state
     entity_id: occupancy
     state: 'on'
     enabled: true
-  - condition: state # Check if occupancy light is offff
+  - condition: state
     entity_id: !input target_light
     state: 'off'
-  - condition: numeric_state # Here we check if the lux value is below the maximum trigger brightness
+  - condition: numeric_state
     entity_id: !input brightness_sensor
     below: !input below_brightness
- - condition: template # Here we check if the brightness of the target light matches the brightness that it has when the motion sensor triggered
+ - condition: template
    value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
    alias: Confirm brightness matches the AutoBrightness
   then:
