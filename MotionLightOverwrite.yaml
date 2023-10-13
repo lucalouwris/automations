@@ -68,7 +68,7 @@ action:
     then:
       - service: light.turn_on
         data:
-          brightness_pct: !input target_brightness
+          brightness: !input target_brightness
         target:
           entity_id: !input target_light
   - if:
