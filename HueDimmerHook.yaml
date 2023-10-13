@@ -15,9 +15,8 @@ blueprint:
       name: Lights
       description: The lights to keep in sync.
       selector:
-        target:
-          entity:
-            domain: light
+        entity:
+          domain: light
           
 mode: restart
 max_exceeded: silent
