@@ -1,31 +1,30 @@
 blueprint:
-  name: Motion triggered rgb light with user change
-  description: Turn a light on based on detected motion and current brightness turn on or off only when user hasn't changed the light
+  name: "Motion light with lux sensor"
+  description: "Light triggers based on motion sensor when a number is below a defined variable for example a lux sensor"
   source_url: https://github.com/lucalouwris/automations/blob/main/MotionLightLux.yaml
   domain: automation
   input:
     motion_sensor:
-      name: Motion Sensor
-      description: This sensor will be synchronized with the light.
+      name: "Motion Sensor"
+      description: "This sensor or sensor group will be used to trigger the automation."
       selector:
         entity:
           domain: binary_sensor
-          device_class: motion
     target_light:
-      name: Lights
-      description: The lights to keep in sync.
+      name: "Light"
+      description: "The light or light group to trigger."
       selector:
         entity:
           domain: light
     lux_sensor:
-      name: Lux Sensor
-      description: The brightness sensor to compare to.
+      name: "Lux Sensor"
+      description: "The lux sensor to grab the lux value."
       selector:
         entity:
           domain: sensor
     max_lux:
-      name: Max lux value
-      description: The maximum brightness for when to still trigger the light.
+      name: "Max lux value"
+      description: "The maximum lux for when to still trigger the light."
       default: 400
       selector:
         number:
@@ -35,8 +34,8 @@ blueprint:
           step: 1.0
           mode: slider
 
-alias: Motion triggered light w. overwrite
-description: "Light triggers based on motion sensor except when it's alreay on or light changed brightness compared to motion light"
+alias: "Motion triggered light w. lux sensor"
+description: "Light triggers based on motion sensor when a number is below a defined variable"
 trigger:
   - platform: state
     entity_id: !input motion_sensor
