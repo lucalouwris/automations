@@ -19,11 +19,11 @@ blueprint:
     target_brightness:
       name: Brightness for the light
       description: How bright the light should be when triggered
-      default: 50
+      default: 100
       selector:
         number:
           min: 1.0
-          max: 100.0
+          max: 255.0
           unit_of_measurement: ''
           step: 1.0
           mode: slider
@@ -76,7 +76,7 @@ action:
         entity_id: !input motion_sensor
         state: "off"
       - condition: template
-        value_template: "{{ (state_attr(AutoLight, 'brightness_pct')|int) == AutoBrightness}}"
+        value_template: "{{ state_attr('AutoLight', 'brightness') < AutoBrightness + 2.55 and state_attr('AutoLight', 'brightness') > AutoBrightness - 2.55 }}"
     then:
       - service: light.turn_off
         data: {}
