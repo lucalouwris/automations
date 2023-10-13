@@ -63,9 +63,9 @@ action:
     entity_id: occupancy
     state: 'off'
     enabled: true
- - condition: template
-   value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
-   alias: Confirm brightness matches the AutoBrightness
+  - condition: template
+    value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
+    alias: Confirm brightness matches the AutoBrightness
   then:
   - service: light.turn_off
     data: {}
