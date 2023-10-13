@@ -1,0 +1,106 @@
+blueprint:
+  name: Motion triggered rgb light with user change
+  description: Turn a light on based on detected motion and current brightness turn on or off only when user hasn't changed the light
+  source_url: https://github.com/lucalouwris/automations/blob/main/MotionRGB.yaml
+  domain: automation
+  input:
+    light_controller:
+      name: Light Controller
+      description: This sensor will be synchronized with the light.
+      selector:
+        entity:
+          domain: sensor
+          device_class: action
+    target_light:
+      name: Lights
+      description: The lights to keep in sync.
+      selector:
+        target:
+          entity:
+            domain: light
+          
+mode: restart
+max_exceeded: silent
+alias: New automation
+description: ""
+
+trigger:
+  - platform: state
+    entity_id: !input light_controller
+    to: "on_press"
+  - platform: state
+    entity_id: !input light_controller
+    to: "up_hold"
+  - platform: state
+    entity_id: !input light_controller
+    to: "up_hold_release"
+  - platform: state
+    entity_id: !input light_controller
+    to: "down_hold"
+  - platform: state
+    entity_id: !input light_controller
+    to: "down_hold_release"
+  - platform: state
+    entity_id: !input light_controller
+    to: "off_press"
+condition: []
+action:
+  - variables:
+      action: "{{ trigger.to_state.state }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'on_press' }}"
+        sequence:
+          - service: light.turn_on
+            data: {}
+            target:
+              entity_id: !input target_light
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'up_hold' }}"
+        sequence:
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  data:
+                    brightness_step: 15
+                    transition: 0.5
+                  target:
+                    entity_id: !input target_light
+                - delay:
+                    hours: 0
+                    minutes: 0
+                    seconds: 0
+                    milliseconds: 500
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'down_hold' }}"
+        sequence:
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  data:
+                    brightness_step: -15
+                    transition: 0.5
+                  target:
+                    entity_id: !input target_light
+                - delay:
+                    hours: 0
+                    minutes: 0
+                    seconds: 0
+                    milliseconds: 500
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'off_press' }}"
+        sequence:
+          - service: light.turn_off
+            data: {}
+            target:
+              entity_id: !input target_light
