@@ -82,9 +82,9 @@ action:
   - condition: numeric_state
     entity_id: !input brightness_sensor
     below: !input below_brightness
- - condition: template
-   value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
-   alias: Confirm brightness matches the AutoBrightness
+  - condition: template
+    value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
+    alias: Confirm brightness matches the AutoBrightness
   then:
   - service: light.turn_on
     data: {}
