@@ -57,36 +57,36 @@ trigger:
 variables:
   target_light_var: !input target_light
   target_brightness_var: !input target_brightness
-action:
-- if:
-  - condition: state
-    entity_id: occupancy
-    state: 'off'
-    enabled: true
-  - condition: template
-    value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
-    alias: Confirm brightness matches the AutoBrightness
-  then:
-  - service: light.turn_off
-    data: {}
-    target:
+  action:
+  - if:
+    - condition: state
+      entity_id: occupancy
+      state: 'off'
+      enabled: true
+    - condition: template
+      value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
+      alias: Confirm brightness matches the AutoBrightness
+    then:
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id: !input target_light
+  - if:
+    - condition: state
+      entity_id: occupancy
+      state: 'on'
+      enabled: true
+    - condition: state
       entity_id: !input target_light
-- if:
-  - condition: state
-    entity_id: occupancy
-    state: 'on'
-    enabled: true
-  - condition: state
-    entity_id: !input target_light
-    state: 'off'
-  - condition: numeric_state
-    entity_id: !input brightness_sensor
-    below: !input below_brightness
-  - condition: template
-    value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
-    alias: Confirm brightness matches the AutoBrightness
-  then:
-  - service: light.turn_on
-    data: {}
-    target:
-      entity_id: !input target_light
+      state: 'off'
+    - condition: numeric_state
+      entity_id: !input brightness_sensor
+      below: !input below_brightness
+    - condition: template
+      value_template: '{{ (state_attr(target_light_var, ''brightness'')|int) == target_brightness_var - 1 }}'
+      alias: Confirm brightness matches the AutoBrightness
+    then:
+    - service: light.turn_on
+      data: {}
+      target:
+        entity_id: !input target_light
