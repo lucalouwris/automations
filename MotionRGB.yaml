@@ -15,9 +15,8 @@ blueprint:
       name: Lights
       description: The lights to keep in sync.
       selector:
-        target:
-          entity:
-            domain: light
+        entity:
+          domain: light
     target_brightness:
       name: Brightness for the light
       description: How bright the light should be when triggered
@@ -33,9 +32,8 @@ blueprint:
       name: Lux Sensor
       description: The brightness sensor to compare to.
       selector:
-        target:
-          entity:
-            domain: sensor
+        entity:
+          domain: sensor
     max_lux:
       name: Max lux value
       description: The maximum brightness for when to still trigger the light.
