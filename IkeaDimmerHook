@@ -1,0 +1,103 @@
+blueprint:
+  name: IKEA Dimmer Hook
+  description: Turn a light with remote
+  source_url: https://github.com/lucalouwris/automations/blob/main/IkeaDimmerHook.yaml
+  domain: automation
+  input:
+    light_controller:
+      name: Light Controller
+      description: This sensor will be synchronized with the light.
+      selector:
+        entity:
+          domain: sensor
+          device_class: action
+    target_light:
+      name: Lights
+      description: The lights to keep in sync.
+      selector:
+        target:
+          entity:
+            domain: light
+          
+mode: restart
+max_exceeded: silent
+alias: New automation
+description: ""
+
+trigger:
+  - platform: state
+    entity_id: !input light_controller
+    to: "on"
+  - platform: state
+    entity_id: !input light_controller
+    to: "off"
+  - platform: state
+    entity_id: !input light_controller
+    to: brightness_move_up
+  - platform: state
+    entity_id: !input light_controller
+    to: brightness_move_down
+  - platform: state
+    entity_id: !input light_controller
+    to: brightness_stop
+condition: []
+action:
+  - variables:
+      action: "{{ trigger.to_state.state }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'on' }}"
+        sequence:
+          - service: light.turn_on
+            data: {}
+            target:
+              entity_id: !input target_light
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'brightness_move_up' }}"
+        sequence:
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  data:
+                    brightness_step: 15
+                    transition: 0.5
+                  target:
+                    entity_id: !input target_light
+                - delay:
+                    hours: 0
+                    minutes: 0
+                    seconds: 0
+                    milliseconds: 500
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'brightness_move_down' }}"
+        sequence:
+          - repeat:
+              sequence:
+                - service: light.turn_on
+                  data:
+                    brightness_step: -15
+                    transition: 0.5
+                  target:
+                    entity_id: !input target_light
+                - delay:
+                    hours: 0
+                    minutes: 0
+                    seconds: 0
+                    milliseconds: 500
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'off' }}"
+        sequence:
+          - service: light.turn_off
+            data: {}
+            target:
+              entity_id: !input target_light
