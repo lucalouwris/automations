@@ -14,7 +14,6 @@ blueprint:
       name: Lights
       description: The lights to keep in sync.
       selector:
-        target:
           entity:
             domain: light
           
