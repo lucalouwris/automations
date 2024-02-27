@@ -1,0 +1,76 @@
+blueprint:
+  name: IKEA Rodret Actions
+  description: Assign any action to the five button press events it shows
+  source_url: https://github.com/lucalouwris/automations/blob/main/RodretActions.yaml
+  domain: automation
+  input:
+    action_on_button_short:
+      name: (Optional) On button short press
+      description: Action to run on short button press.
+      default: []
+      selector:
+        action:
+    action_on_button_long:
+      name: (Optional) On Button long press
+      description: Action to run on long button press.
+      default: []
+      selector:
+        action:
+    action_off_button_short:
+      name: (Optional) Off button short press
+      description: Action to run on short button press.
+      default: []
+      selector:
+        action:
+    action_off_button_long:
+      name: (Optional) Off Button long press
+      description: Action to run on long button press.
+      default: []
+      selector:
+        action:
+    action_button_release:
+      name: (Optional) Button release
+      description: Action to run on button release after long press.
+      default: []
+      selector:
+        action:
+          
+mode: restart
+max_exceeded: silent
+alias: New automation
+description: ""
+
+trigger:
+  - platform: state
+    entity_id: !input light_controller
+condition: []
+action:
+  - variables:
+      action: "{{ trigger.to_state.state }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'on' }}"
+        sequence: !input action_on_button_short
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'brightness_move_up' }}"
+        sequence:
+          - repeat:
+              sequence: !input action_on_button_long
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'brightness_move_down' }}"
+        sequence:
+          - repeat:
+              sequence: !input action_off_button_long
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'off' }}"
+        sequence: !input action_off_button_short
