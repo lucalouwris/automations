@@ -1,9 +1,14 @@
 blueprint:
   name: Hue Device Actions
   description: Assign any action to the five button press events it shows
-  source_url: https://github.com/lucalouwris/automations/blob/main/HueDimmerHook.yaml
+  source_url: https://github.com/lucalouwris/automations/blob/main/RodretActions.yaml
   domain: automation
   input:
+    device_id:
+      name: Device ID
+      description: Specify the MQTT device ID.
+      selector:
+        text:
     action_on_button_short:
       name: (Optional) On button short press
       description: Action to run on short button press.
@@ -48,32 +53,32 @@ alias: Hue Button Actions
 trigger:
   - platform: device
     domain: mqtt
-    device_id: d30430094bd447cb23c689678c4223a1
+    device_id: !input device_id
     type: action
     subtype: on_press
   - platform: device
     domain: mqtt
-    device_id: d30430094bd447cb23c689678c4223a1
+    device_id: !input device_id
     type: action
     subtype: up_hold
   - platform: device
     domain: mqtt
-    device_id: d30430094bd447cb23c689678c4223a1
+    device_id: !input device_id
     type: action
     subtype: up_hold_release
   - platform: device
     domain: mqtt
-    device_id: d30430094bd447cb23c689678c4223a1
+    device_id: !input device_id
     type: action
     subtype: down_hold
   - platform: device
     domain: mqtt
-    device_id: d30430094bd447cb23c689678c4223a1
+    device_id: !input device_id
     type: action
     subtype: down_hold_release
   - platform: device
     domain: mqtt
-    device_id: d30430094bd447cb23c689678c4223a1
+    device_id: !input device_id
     type: action
     subtype: off_press
 
