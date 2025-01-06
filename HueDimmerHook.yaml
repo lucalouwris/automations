@@ -9,7 +9,6 @@ blueprint:
       description: Select the MQTT device.
       selector:
         device:
-          integration: mqtt
     action_on_button_short:
       name: (Optional) On button short press
       description: Action to run on short button press.
