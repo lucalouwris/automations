@@ -1,7 +1,7 @@
 blueprint:
   name: Hue Device Actions
   description: Assign any action to the five button press events it shows
-  source_url: https://github.com/lucalouwris/automations/main/HueDimmerHook.yaml
+  source_url: https://github.com/lucalouwris/automations/blob/main/HueDimmerHook.yaml
   domain: automation
   input:
     action_on_button_short:
