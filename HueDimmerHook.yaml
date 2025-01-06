@@ -1,104 +1,119 @@
 blueprint:
-  name: Hue Dimmer Hook
-  description: Turn on a light with a Hue remote
-  source_url: https://github.com/lucalouwris/automations/blob/main/HueDimmerHook.yaml
+  name: Hue Device Actions
+  description: Assign any action to the five button press events it shows
+  source_url: https://github.com/lucalouwris/automations/main/HueDimmerHook.yaml
   domain: automation
   input:
-    light_controller:
-      name: Light Controller
-      description: This sensor will be synchronized with the light.
+    action_on_button_short:
+      name: (Optional) On button short press
+      description: Action to run on short button press.
+      default: []
       selector:
-        entity:
-          domain: sensor
-    target_light:
-      name: Lights
-      description: The lights to keep in sync.
+        action:
+    action_on_button_long:
+      name: (Optional) On Button long press
+      description: Action to run on long button press.
+      default: []
       selector:
-        entity:
-          domain: light
-          
+        action:
+    action_on_button_release:
+      name: (Optional) On button long press release
+      description: Action to run on button release after long press.
+      default: []
+      selector:
+        action:
+    action_off_button_short:
+      name: (Optional) Off button short press
+      description: Action to run on short button press.
+      default: []
+      selector:
+        action:
+    action_off_button_long:
+      name: (Optional) Off Button long press
+      description: Action to run on long button press.
+      default: []
+      selector:
+        action:
+    action_off_button_release:
+      name: (Optional) Off button long press release
+      description: Action to run on button release after long press.
+      default: []
+      selector:
+        action:
+
 mode: restart
 max_exceeded: silent
-alias: New automation
-description: ""
+alias: Hue Button Actions
 
 trigger:
-  - platform: state
-    entity_id: !input light_controller
-    to: "on_press"
-  - platform: state
-    entity_id: !input light_controller
-    to: "up_hold"
-  - platform: state
-    entity_id: !input light_controller
-    to: "up_hold_release"
-  - platform: state
-    entity_id: !input light_controller
-    to: "down_hold"
-  - platform: state
-    entity_id: !input light_controller
-    to: "down_hold_release"
-  - platform: state
-    entity_id: !input light_controller
-    to: "off_press"
+  - platform: device
+    domain: mqtt
+    device_id: d30430094bd447cb23c689678c4223a1
+    type: action
+    subtype: on_press
+  - platform: device
+    domain: mqtt
+    device_id: d30430094bd447cb23c689678c4223a1
+    type: action
+    subtype: up_hold
+  - platform: device
+    domain: mqtt
+    device_id: d30430094bd447cb23c689678c4223a1
+    type: action
+    subtype: up_hold_release
+  - platform: device
+    domain: mqtt
+    device_id: d30430094bd447cb23c689678c4223a1
+    type: action
+    subtype: down_hold
+  - platform: device
+    domain: mqtt
+    device_id: d30430094bd447cb23c689678c4223a1
+    type: action
+    subtype: down_hold_release
+  - platform: device
+    domain: mqtt
+    device_id: d30430094bd447cb23c689678c4223a1
+    type: action
+    subtype: off_press
+
 condition: []
+
 action:
   - variables:
-      action: "{{ trigger.to_state.state }}"
+      action: "{{ trigger.subtype }}"
   - choose:
       - conditions:
           - condition: template
             value_template: "{{ action == 'on_press' }}"
-        sequence:
-          - service: light.turn_on
-            data: {}
-            target:
-              entity_id: !input target_light
+        sequence: !input action_on_button_short
       - conditions:
           - condition: template
             value_template: "{{ action == 'up_hold' }}"
         sequence:
           - repeat:
-              sequence:
-                - service: light.turn_on
-                  data:
-                    brightness_step: 15
-                    transition: 0.5
-                  target:
-                    entity_id: !input target_light
-                - delay:
-                    hours: 0
-                    minutes: 0
-                    seconds: 0
-                    milliseconds: 500
+              sequence: !input action_on_button_long
               while:
                 - condition: template
                   value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'up_hold_release' }}"
+        sequence: !input action_on_button_release
       - conditions:
           - condition: template
             value_template: "{{ action == 'down_hold' }}"
         sequence:
           - repeat:
-              sequence:
-                - service: light.turn_on
-                  data:
-                    brightness_step: -15
-                    transition: 0.5
-                  target:
-                    entity_id: !input target_light
-                - delay:
-                    hours: 0
-                    minutes: 0
-                    seconds: 0
-                    milliseconds: 500
+              sequence: !input action_off_button_long
               while:
                 - condition: template
                   value_template: "{{ true }}"
       - conditions:
           - condition: template
+            value_template: "{{ action == 'down_hold_release' }}"
+        sequence: !input action_off_button_release
+      - conditions:
+          - condition: template
             value_template: "{{ action == 'off_press' }}"
-        sequence:
-          - service: light.turn_off
-            data: {}
-            target:
-              entity_id: !input target_light
+        sequence: !input action_off_button_short
