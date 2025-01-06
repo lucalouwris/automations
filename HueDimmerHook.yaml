@@ -10,7 +10,7 @@ blueprint:
       selector:
         device:        
           filter:
-            - integration: mqtt
+            - integration: MQTT
               manufacturer: Philips
     action_on_button_short:
       name: (Optional) On button short press
