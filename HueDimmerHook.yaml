@@ -8,10 +8,7 @@ blueprint:
       name: Device
       description: Select the MQTT device.
       selector:
-        device:        
-          filter:
-            - integration: MQTT
-              manufacturer: philips
+        device:
     action_on_button_short:
       name: (Optional) On button short press
       description: Action to run on short button press.
