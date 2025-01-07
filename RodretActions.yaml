@@ -147,7 +147,7 @@ action:
             value_template: "{{ action == '1_long_press' }}"
         sequence:
           - repeat:
-              sequence: !input 1_long_press
+              sequence: !input action_1_long_press
               while:
                 - condition: template
                   value_template: "{{ true }}"
