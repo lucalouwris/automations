@@ -4,79 +4,172 @@ blueprint:
   source_url: https://github.com/lucalouwris/automations/blob/main/RodretActions.yaml
   domain: automation
   input:
-    light_controller:
-      name: Light Controller
-      description: This sensor will be synchronized with the light.
+    device:
+      name: Ikea switch
+      description: Select the MQTT device that represents the switch.
       selector:
-        entity:
-          domain: sensor
-    action_on_button_short:
-      name: (Optional) On button short press
-      description: Action to run on short button press.
+        device:
+    action_1_initial_press:
+      name: (Optional) 1 initial press
       default: []
       selector:
         action:
-    action_on_button_long:
-      name: (Optional) On Button long press
-      description: Action to run on long button press.
+    action_1_short_release:
+      name: (Optional) 1 short release
       default: []
       selector:
         action:
-    action_off_button_short:
-      name: (Optional) Off button short press
-      description: Action to run on short button press.
+    action_1_long_press:
+      name: (Optional) 1 long press
       default: []
       selector:
         action:
-    action_off_button_long:
-      name: (Optional) Off Button long press
-      description: Action to run on long button press.
+    action_1_long_release:
+      name: (Optional) 1 long release
       default: []
       selector:
         action:
-    action_button_release:
-      name: (Optional) Button release
-      description: Action to run on button release after long press.
+    action_1_double_press:
+      name: (Optional) 1 double press
       default: []
       selector:
         action:
-          
+    action_2_initial_press:
+      name: (Optional) 2 initial press
+      default: []
+      selector:
+        action:
+    action_2_short_release:
+      name: (Optional) 2 short release
+      default: []
+      selector:
+        action:
+    action_2_long_press:
+      name: (Optional) 2 long press
+      default: []
+      selector:
+        action:
+    action_2_long_release:
+      name: (Optional) 2 long release
+      default: []
+      selector:
+        action:
+    action_2_double_press:
+      name: (Optional) 2 double press
+      default: []
+      selector:
+        action:
+
 mode: restart
 max_exceeded: silent
-alias: New automation
-description: ""
+alias: Hue Button Actions
 
-trigger:
-  - platform: state
-    entity_id: !input light_controller
+trigger:  
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 1_initial_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 1_short_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 1_long_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 1_long_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 1_double_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 2_initial_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 2_short_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 2_long_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 2_long_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: 2_double_press
+
 condition: []
+
 action:
   - variables:
-      action: "{{ trigger.to_state.state }}"
+      action: "{{ trigger.payload }}"
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ action == 'on' }}"
-        sequence: !input action_on_button_short
+            value_template: "{{ action == '1_initial_press' }}"
+        sequence: !input action_on_press
       - conditions:
           - condition: template
-            value_template: "{{ action == 'brightness_move_up' }}"
+            value_template: "{{ action == '1_short_release' }}"
+        sequence: !input action_on_press_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == '2_initial_press' }}"
+        sequence: !input action_on_hold_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == '1_long_release' }}"
+        sequence: !input action_up_press
+      - conditions:
+          - condition: template
+            value_template: "{{ action == '1_double_press' }}"
+        sequence: !input action_up_press_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == '1_long_press' }}"
         sequence:
           - repeat:
-              sequence: !input action_on_button_long
+              sequence: !input action_up_hold
               while:
                 - condition: template
                   value_template: "{{ true }}"
       - conditions:
           - condition: template
-            value_template: "{{ action == 'brightness_move_down' }}"
+            value_template: "{{ action == '2_short_release' }}"
+        sequence: !input action_up_hold_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == '2_double_press' }}"
+        sequence: !input action_down_press
+      - conditions:
+          - condition: template
+            value_template: "{{ action == '2_long_release' }}"
+        sequence: !input action_down_press_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == '2_long_press' }}"
         sequence:
           - repeat:
-              sequence: !input action_off_button_long
+              sequence: !input action_down_hold
               while:
                 - condition: template
                   value_template: "{{ true }}"
-      - conditions:
-          - condition: template
-            value_template: "{{ action == 'off' }}"
-        sequence: !input action_off_button_short
+
