@@ -10,7 +10,7 @@ blueprint:
       selector:
         device:
         
-  action_on_press:
+    action_on_press:
       name: (Optional) on press
       description: Action to run on press.
       default: []
