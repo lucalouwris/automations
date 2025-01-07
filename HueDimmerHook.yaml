@@ -86,7 +86,7 @@ condition: []
 
 action:
   - variables:
-      action: "{{ trigger.subtype }}"
+      action: "{{ trigger.payload }}"
   - choose:
       - conditions:
           - condition: template
