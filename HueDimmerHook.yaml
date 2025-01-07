@@ -9,53 +9,138 @@ blueprint:
       description: Select the MQTT device.
       selector:
         device:
-    action_on_button_short:
-      name: (Optional) On button short press
-      description: Action to run on short button press.
-      default: []
-      selector:
-        action:
-    action_on_button_long:
-      name: (Optional) On Button long press
-      description: Action to run on long button press.
-      default: []
-      selector:
-        action:
-    action_on_button_release:
-      name: (Optional) On button long press release
-      description: Action to run on button release after long press.
-      default: []
-      selector:
-        action:
-    action_off_button_short:
-      name: (Optional) Off button short press
-      description: Action to run on short button press.
-      default: []
-      selector:
-        action:
-    action_off_button_long:
-      name: (Optional) Off Button long press
-      description: Action to run on long button press.
-      default: []
-      selector:
-        action:
-    action_off_button_release:
-      name: (Optional) Off button long press release
-      description: Action to run on button release after long press.
-      default: []
-      selector:
-        action:
+  	action_on_press:
+        name: (Optional) on press
+        description: Action to run on press.
+        default: []
+        selector:
+          action:
+  	action_on_press_release:
+        name: (Optional) on press release
+        description: Action to run on press release.
+        default: []
+        selector:
+          action:
+  	action_on_hold:
+        name: (Optional) on hold
+        description: Action to run on hold.
+        default: []
+        selector:
+          action:
+  	action_on_hold_release:
+        name: (Optional) on hold release
+        description: Action to run on hold release.
+        default: []
+        selector:
+          action:
+  	action_up_press:
+        name: (Optional) up press
+        description: Action to run up press.
+        default: []
+        selector:
+          action:
+  	action_up_press_release:
+        name: (Optional) up press release
+        description: Action to run up press release.
+        default: []
+        selector:
+          action:
+  	action_up_hold:
+        name: (Optional) up hold
+        description: Action to run up hold.
+        default: []
+        selector:
+          action:
+  	action_up_hold_release:
+        name: (Optional) up hold release
+        description: Action to run up hold release.
+        default: []
+        selector:
+          action:
+  	action_down_press:
+        name: (Optional) down press
+        description: Action to run down press.
+        default: []
+        selector:
+          action:
+  	action_down_press_release:
+        name: (Optional) down press release
+        description: Action to run down press release.
+        default: []
+        selector:
+          action:
+  	action_down_hold:
+        name: (Optional) down hold
+        description: Action to run down hold.
+        default: []
+        selector:
+          action:
+  	action_down_hold_release:
+        name: (Optional) down hold release
+        description: Action to run down hold release.
+        default: []
+        selector:
+          action:
+  	action_off_press:
+        name: (Optional) off press
+        description: Action to run off press.
+        default: []
+        selector:
+          action:
+  	action_off_press_release:
+        name: (Optional) off press release
+        description: Action to run off press release.
+        default: []
+        selector:
+          action:
+  	action_off_hold:
+        name: (Optional) off hold
+        description: Action to run off hold.
+        default: []
+        selector:
+          action:
+  	action_off_hold_release:
+        name: (Optional) off hold release
+        description: Action to run off hold release.
+        default: []
+        selector:
+          action:
 
 mode: restart
 max_exceeded: silent
 alias: Hue Button Actions
 
-trigger:
+trigger:  
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: on_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: on_press_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: on_hold
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: on_hold_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: up_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: up_press_release
   - platform: device
     domain: mqtt
     device_id: !input device
@@ -66,6 +151,16 @@ trigger:
     device_id: !input device
     type: action
     subtype: up_hold_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: down_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: down_press_release
   - platform: device
     domain: mqtt
     device_id: !input device
@@ -81,44 +176,109 @@ trigger:
     device_id: !input device
     type: action
     subtype: off_press
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: off_press_release
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: off_hold
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: off_hold_release
 
 condition: []
 
 action:
   - variables:
       action: "{{ trigger.payload }}"
-  - choose:
+        - choose:
       - conditions:
           - condition: template
             value_template: "{{ action == 'on_press' }}"
-        sequence: !input action_on_button_short
+        sequence: !input action_on_press
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'on_press_release' }}"
+        sequence: !input action_on_press_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'on_hold' }}"
+        sequence:
+          - repeat:
+              sequence: !input action_on_hold
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'on_hold_release' }}"
+        sequence: !input action_on_hold_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'up_press' }}"
+        sequence: !input action_up_press
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'up_press_release' }}"
+        sequence: !input action_up_press_release
       - conditions:
           - condition: template
             value_template: "{{ action == 'up_hold' }}"
         sequence:
           - repeat:
-              sequence: !input action_on_button_long
+              sequence: !input action_up_hold
               while:
                 - condition: template
                   value_template: "{{ true }}"
       - conditions:
           - condition: template
             value_template: "{{ action == 'up_hold_release' }}"
-        sequence: !input action_on_button_release
+        sequence: !input action_up_hold_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'down_press' }}"
+        sequence: !input action_down_press
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'down_press_release' }}"
+        sequence: !input action_down_press_release
       - conditions:
           - condition: template
             value_template: "{{ action == 'down_hold' }}"
         sequence:
           - repeat:
-              sequence: !input action_off_button_long
+              sequence: !input action_down_hold
               while:
                 - condition: template
                   value_template: "{{ true }}"
       - conditions:
           - condition: template
             value_template: "{{ action == 'down_hold_release' }}"
-        sequence: !input action_off_button_release
+        sequence: !input action_down_hold_release
       - conditions:
           - condition: template
             value_template: "{{ action == 'off_press' }}"
-        sequence: !input action_off_button_short
+        sequence: !input action_off_press
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'off_press_release' }}"
+        sequence: !input action_off_press_release
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'off_hold' }}"
+        sequence:
+          - repeat:
+              sequence: !input action_off_hold
+              while:
+                - condition: template
+                  value_template: "{{ true }}"
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'off_hold_release' }}"
+        sequence: !input action_off_hold_release
